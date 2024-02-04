@@ -9,7 +9,7 @@ public class SellBatchUpdateRequest {
     List<SellInfo> sellInfos;
 
     @Data
-    public class SellInfo {
+    public static class SellInfo {
         private String soldItemName;
         private int quantity;
     }

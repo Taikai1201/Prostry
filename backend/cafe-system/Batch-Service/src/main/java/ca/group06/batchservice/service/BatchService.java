@@ -63,7 +63,7 @@ public class BatchService {
 
         if (batch == null) {
             log.error("No record with such QR-Code-ID: {}", qrCodeId);
-            return new ResponseEntity<String>("No record with such QR-Code-ID: " + qrCodeId,
+            return new ResponseEntity<>("No record with such QR-Code-ID: " + qrCodeId,
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -79,7 +79,7 @@ public class BatchService {
 
         if (batch == null) {
             log.error("No record with such ID: {}", id);
-            return new ResponseEntity<String>("No record with such ID: {}" + id,
+            return new ResponseEntity<>("No record with such ID: {}" + id,
                     HttpStatus.BAD_REQUEST);
         }
 
