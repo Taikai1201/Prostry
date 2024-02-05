@@ -55,7 +55,6 @@ public class TypeService {
         log.info("Getting type info for ID: {}", id);
 
         Type type = typeRepository.findById(id).orElse(null);
-
         if (type == null) {
             log.error("No type record with such ID: {}", id);
             return new ResponseEntity<>("No type record with such ID: " + id,
@@ -100,8 +99,8 @@ public class TypeService {
     public int getShelfLife(UUID typeId) {
 
         log.info("Getting shelf life for ID: {}", typeId);
-        Type type = typeRepository.findById(typeId).orElse(null);
 
+        Type type = typeRepository.findById(typeId).orElse(null);
         if (type == null) {
             log.error("Unknown type ID.");
             return -1;

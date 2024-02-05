@@ -32,12 +32,14 @@ public class BatchService {
 
         log.info("Creating new batch record. {}", request.toString());
 
+        // Building new batch entity with provided data
         Batch batch = Batch.builder()
                 .name(request.getName())
                 .quantity(request.getQuantity())
                 .qrCodeId(request.getQrCodeId())
                 .build();
 
+        // Getting shelf life from typeService
         int storeDays = typeService.getShelfLife(request.getTypeId());
         if (storeDays == -1) {
             log.error("Unknown type ID");
@@ -45,6 +47,7 @@ public class BatchService {
                     HttpStatus.BAD_REQUEST);
         }
 
+        // Setting bestBefore (createdAt + storeDays) and type
         batch.setBestBefore(batch.getCreatedAt().plusDays(storeDays));
         batch.setType(typeService.getTypeReference(request.getTypeId()));
 
@@ -59,8 +62,8 @@ public class BatchService {
 
         log.info("Reading record with QR-code-ID: {}", qrCodeId);
 
+        // Getting batch record from DB using qrCodeId
         Batch batch = batchRepository.findByQrCodeId(qrCodeId).orElse(null);
-
         if (batch == null) {
             log.error("No record with such QR-Code-ID: {}", qrCodeId);
             return new ResponseEntity<>("No record with such QR-Code-ID: " + qrCodeId,
@@ -75,14 +78,15 @@ public class BatchService {
 
         log.info("Updating batch record with ID: {}", id);
 
+        // Getting batch record using ID
         Batch batch = batchRepository.findById(id).orElse(null);
-
         if (batch == null) {
             log.error("No record with such ID: {}", id);
             return new ResponseEntity<>("No record with such ID: {}" + id,
                     HttpStatus.BAD_REQUEST);
         }
 
+        // Updating fields
         batch.setName(request.getName());
         batch.setQuantity(request.getQuantity());
         batch.setQrCodeId(request.getQrCodeId());
@@ -102,25 +106,35 @@ public class BatchService {
 
         log.info("Updating batch records with selling info");
 
+        // Extract sold items names from request into List<String>
         List<String> soldItemsNames = request.getSellInfos().stream()
                 .map(SellBatchUpdateRequest.SellInfo::getSoldItemName)
                 .toList();
 
+        // Getting all records with provided names from DB
         List<Batch> batches = batchRepository.findAllByNameInAndQuantityGreaterThan(soldItemsNames, 0);
 
+        // Sorting all records Increase based on createdAt and grouping based on record name field
         Map<String, List<Batch>> groupedBatches = batches.stream()
                 .sorted(Comparator.comparing(Batch::getCreatedAt))
                 .collect(groupingBy(Batch::getName));
 
+        // Iterating through sellInfo
         for (SellBatchUpdateRequest.SellInfo sellInfo : request.getSellInfos()) {
+            // Getting list of records for each name from request
             for (var batch : groupedBatches.get(sellInfo.getSoldItemName())) {
                 int batchQuantity = batch.getQuantity();
                 int remainder = sellInfo.getQuantity() - batchQuantity;
 
+                // If remainder less or equal zero => we have cycled through all necessary records,
+                // we should leave this group
                 if (remainder <= 0) {
                     batch.setQuantity(batchQuantity - sellInfo.getQuantity());
                     batchRepository.save(batch);
-                } else {
+                    break;
+                }
+                // if it's less than zero => there are more records to update
+                else {
                     batch.setQuantity(0);
                     batchRepository.save(batch);
                     sellInfo.setQuantity(sellInfo.getQuantity() - batchQuantity);
