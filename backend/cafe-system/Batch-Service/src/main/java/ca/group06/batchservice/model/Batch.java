@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
-@Table(name = "t_batch")
+@Table(name = "t_batches")
 @Builder
 @Data
 @AllArgsConstructor

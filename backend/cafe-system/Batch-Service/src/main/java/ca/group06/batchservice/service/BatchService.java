@@ -74,6 +74,17 @@ public class BatchService {
         return new ResponseEntity<>(mapToBatchDto(batch), HttpStatus.OK);
     }
 
+    public ResponseEntity<?> getAllBatchRecords() {
+        log.info("Getting all batch records");
+
+        List<BatchDto> batchDtos = batchRepository.findAll()
+                .stream()
+                .map(this::mapToBatchDto)
+                .toList();
+
+        return new ResponseEntity<>(batchDtos, HttpStatus.OK);
+    }
+
     public ResponseEntity<?> updateBatchRecord(UUID id, UpdateBatchRequest request) {
 
         log.info("Updating batch record with ID: {}", id);
@@ -82,7 +93,7 @@ public class BatchService {
         Batch batch = batchRepository.findById(id).orElse(null);
         if (batch == null) {
             log.error("No record with such ID: {}", id);
-            return new ResponseEntity<>("No record with such ID: {}" + id,
+            return new ResponseEntity<>("No record with such ID: " + id,
                     HttpStatus.BAD_REQUEST);
         }
 
@@ -91,6 +102,7 @@ public class BatchService {
         batch.setQuantity(request.getQuantity());
         batch.setQrCodeId(request.getQrCodeId());
 
+        batchRepository.save(batch);
         log.info("Record has been updated");
         return new ResponseEntity<>("Record has been updated", HttpStatus.OK);
     }

@@ -27,6 +27,11 @@ public class BatchController {
         return batchService.getBatchRecord(qrCodeId);
     }
 
+    @GetMapping
+    public ResponseEntity<?> getAllBatchRecords() {
+        return batchService.getAllBatchRecords();
+    }
+
     @PutMapping("/{batchId}")
     public ResponseEntity<?> updateBatchRecord(@PathVariable UUID batchId, @RequestBody UpdateBatchRequest request) {
         return batchService.updateBatchRecord(batchId, request);
