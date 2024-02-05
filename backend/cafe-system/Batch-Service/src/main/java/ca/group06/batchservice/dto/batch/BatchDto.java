@@ -1,6 +1,7 @@
 package ca.group06.batchservice.dto.batch;
 
 import ca.group06.batchservice.dto.type.TypeInfo;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Data
 @Builder
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class BatchDto {
     private UUID id;
     private String name;

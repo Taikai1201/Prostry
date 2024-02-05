@@ -1,14 +1,13 @@
 package ca.group06.batchservice.dto.type;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import java.util.UUID;
 
 @Data
 @Builder
 @RequiredArgsConstructor
+@AllArgsConstructor
 public class TypeInfo {
     private UUID id;
     private String name;
