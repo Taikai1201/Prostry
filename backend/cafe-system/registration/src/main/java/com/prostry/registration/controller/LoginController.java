@@ -1,5 +1,7 @@
 package com.prostry.registration.controller;
 
+import com.prostry.registration.dto.LoginRequest;
+import com.prostry.registration.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,9 +21,10 @@ public class LoginController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-//    @PostMapping
-//    public ResponseEntity<?> login(@RequestBody) {
-//        return ResponseEntity.ok("Login successful");
-//    }
+    @PostMapping
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+        User user = userRepository.findByUsername(loginRequest.getUsername()).orElseThrow(() -> new RuntimeException("User not found with username: " + loginRequest.getUsername()));
+        return ResponseEntity.ok("Login successful");
+    }
 
 }
