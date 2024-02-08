@@ -1,0 +1,29 @@
+version: '3.8'
+name: 'cafe-system'
+
+services:
+  batchDB:
+    image: postgres
+    container_name: batch-database
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+    restart: unless-stopped
+    volumes:
+      - ./data/Batch-Service:/var/lib/postgresql/data
+      - ./init/Batch-Service/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  sellsDB:
+    image: postgres
+    container_name: sells-database
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+    restart: unless-stopped
+    volumes:
+      - ./data/Sell-Service:/var/lib/postgresql/data
+      - ./init/Sell-Service/init.sql:/docker-entrypoint-initdb.d/init.sql
