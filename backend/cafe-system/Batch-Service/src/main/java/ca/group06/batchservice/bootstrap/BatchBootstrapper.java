@@ -26,18 +26,10 @@ public class BatchBootstrapper implements DevDataBootstrapper {
 
         log.info("Bootstrapping batches");
 
-        Type cookiesType = typeRepository.findById(
-                UUID.fromString("44395ba6-355f-4b26-9a30-cff77aafa7d1"))
-                .get();
-        Type breadType = typeRepository.findById(
-                UUID.fromString("d2b16bb2-843b-40e7-b463-4910cc35dfbe"))
-                .get();
-        Type muffinsType = typeRepository.findById(
-                UUID.fromString("6f4f607b-76a9-432e-817e-8d61a3532c8a"))
-                .get();
-        Type sandwichesType = typeRepository.findById(
-                UUID.fromString("77323bfc-f638-4c55-b9de-54737280f155"))
-                .get();
+        Type cookiesType = typeRepository.findByName("Cookies").get();
+        Type breadType = typeRepository.findByName("Bread").get();
+        Type muffinsType = typeRepository.findByName("Muffins").get();
+        Type sandwichesType = typeRepository.findByName("Sandwiches").get();
 
         Batch b1 = Batch.builder()
                 .name("Chocolate cookie")

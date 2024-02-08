@@ -9,9 +9,11 @@ import org.springframework.stereotype.Component;
 public class DevDataInitializer implements CommandLineRunner {
 
     private final BatchBootstrapper batchBootstrapper;
+    private final TypeBootstrapper typeBootstrapper;
 
     @Override
     public void run(String... args) throws Exception {
+        typeBootstrapper.bootstrap();
         batchBootstrapper.bootstrap();
     }
 }
