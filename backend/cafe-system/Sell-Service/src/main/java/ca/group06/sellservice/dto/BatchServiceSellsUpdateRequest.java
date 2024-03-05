@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class BatchServiceSellUpdateRequest {
+public class BatchServiceSellsUpdateRequest {
     List<SellInfo> sellInfos;
 
     @Data
