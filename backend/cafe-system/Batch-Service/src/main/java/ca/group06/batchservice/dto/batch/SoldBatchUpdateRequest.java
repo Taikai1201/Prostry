@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SellBatchUpdateRequest {
+public class SoldBatchUpdateRequest {
     List<SellInfo> sellInfos;
 
     @Data

@@ -11,6 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -20,82 +23,76 @@ public class TypeService {
 
     private final TypeRepository typeRepository;
 
-    public ResponseEntity<?> createTypeRecord(CreateTypeRequest request) {
+    public void createTypeRecord(CreateTypeRequest request) {
         log.info("Creating new type record with name {}", request.getName());
 
-        Type type = typeRepository.findByName(request.getName()).orElse(null);
+        Optional<Type> type = typeRepository.findByName(request.getName());
 
-        if (type != null) {
+        if (type.isPresent()) {
             log.warn("Type with such name already exists.");
-            return new ResponseEntity<>("Type with such name already exists.",
-                    HttpStatus.BAD_REQUEST);
+            throw new InvalidParameterException(
+                    String.format("Type with such name already exists: %s",
+                            request.getName()));
         }
 
-        type = Type.builder()
+        Type newType = Type.builder()
                 .name(request.getName())
                 .storeDays(request.getStoreDays())
                 .build();
 
-        typeRepository.save(type);
+        typeRepository.save(newType);
         log.info("New record record has been created");
-        return new ResponseEntity<>("New record record has been created",
-                HttpStatus.CREATED);
     }
 
-    public ResponseEntity<?> getAllTypeRecords() {
+    public List<TypeInfo> getAllTypeRecords() {
         log.info("Getting all type records");
-        return new ResponseEntity<>(typeRepository.findAll()
+        return typeRepository.findAll()
                 .stream()
                 .map(this::mapToTypeInfo)
-                .toList(), HttpStatus.OK);
+                .toList();
     }
 
-    public ResponseEntity<?> getTypeRecord(UUID id) {
+    public TypeInfo getTypeRecord(UUID id) {
 
         log.info("Getting type info for ID: {}", id);
 
-        Type type = typeRepository.findById(id).orElse(null);
-        if (type == null) {
-            log.error("No type record with such ID: {}", id);
-            return new ResponseEntity<>("No type record with such ID: " + id,
-                    HttpStatus.BAD_REQUEST);
-        }
-
+        Type type = typeRepository.findById(id).orElseThrow(
+                () -> {
+                    log.error("No type record with such ID: {}", id);
+                    return new InvalidParameterException(
+                            String.format("No type record with such ID: %s", id));
+                }
+        );
         log.info("Returning type info");
-        return new ResponseEntity<>("Returning type info", HttpStatus.OK);
+        return mapToTypeInfo(type);
     }
 
-    public ResponseEntity<?> updateTypeRecord(UUID id, UpdateTypeRequest request) {
+    public void updateTypeRecord(UUID id, UpdateTypeRequest request) {
 
         log.info("Updating type record with ID: {}", id);
 
-        Type type = typeRepository.findById(id).orElse(null);
-
-        if (type == null) {
+        Type type = typeRepository.findById(id).orElseThrow(() -> {
             log.error("No type record with such ID: {}", id);
-            return new ResponseEntity<>("No type record with such ID: " + id,
-                    HttpStatus.BAD_REQUEST);
-        }
+            return new InvalidParameterException(
+                    String.format("No type record with such ID: %s", id));
+        });
 
         type.setName(request.getName());
         type.setStoreDays(request.getStoreDays());
 
         typeRepository.save(type);
         log.info("Type record updated");
-        return new ResponseEntity<>("Type record updated", HttpStatus.OK);
     }
 
-    public ResponseEntity<?> deleteTypeRecord(UUID id) {
-
+    public void deleteTypeRecord(UUID id) {
         log.info("Deleting type record with ID: {}", id);
-
         typeRepository.deleteById(id);
-
-        log.info("Deleted type record with ID: {}", id);
-        return new ResponseEntity<>("Deleted type record with ID: " + id,
-                HttpStatus.OK);
     }
 
+    /**
+     * @param typeId
+     * @return Shelf life for provided typeID or -1 if type was not found
+     */
     public int getShelfLife(UUID typeId) {
 
         log.info("Getting shelf life for ID: {}", typeId);

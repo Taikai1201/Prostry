@@ -1,16 +1,20 @@
 package ca.group06.batchservice.controller;
 
 import ca.group06.batchservice.dto.type.CreateTypeRequest;
+import ca.group06.batchservice.dto.type.TypeInfo;
 import ca.group06.batchservice.dto.type.UpdateTypeRequest;
 import ca.group06.batchservice.service.TypeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.InvalidParameterException;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/batch-service/types")
+@RequestMapping("/api/v1/types")
 @RequiredArgsConstructor
 public class TypeController {
 
@@ -18,27 +22,53 @@ public class TypeController {
 
     @PostMapping
     public ResponseEntity<?> createTypeRecord(@RequestBody CreateTypeRequest request) {
-        return typeService.createTypeRecord(request);
+
+        try {
+            typeService.createTypeRecord(request);
+        } catch (InvalidParameterException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>("New record record has been created",
+                HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<?> getAllTypeRecords() {
-        return typeService.getAllTypeRecords();
+        List<TypeInfo> typeInfos = typeService.getAllTypeRecords();
+        return new ResponseEntity<>(typeInfos, HttpStatus.OK);
     }
 
     @GetMapping("/{typeId}")
     public ResponseEntity<?> getTypeRecord(@PathVariable UUID typeId) {
-        return typeService.getTypeRecord(typeId);
+
+        TypeInfo typeInfo;
+
+        try {
+            typeInfo = typeService.getTypeRecord(typeId);
+        } catch (InvalidParameterException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(typeInfo, HttpStatus.OK);
     }
 
     @PutMapping("/{typeId}")
     public ResponseEntity<?> updateTypeRecord(@PathVariable UUID typeId, @RequestBody UpdateTypeRequest request) {
-        return typeService.updateTypeRecord(typeId, request);
+
+        try {
+            typeService.updateTypeRecord(typeId, request);
+        } catch (InvalidParameterException e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>("Type record updated", HttpStatus.OK);
     }
 
     @DeleteMapping
     public ResponseEntity<?> deleteTypeRecord(UUID id) {
-        return typeService.deleteTypeRecord(id);
+        typeService.deleteTypeRecord(id);
+        return ResponseEntity.ok().build();
     }
 
 }

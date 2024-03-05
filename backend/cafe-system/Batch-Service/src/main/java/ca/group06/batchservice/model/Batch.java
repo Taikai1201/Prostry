@@ -31,7 +31,7 @@ public class Batch {
     private LocalDate bestBefore;
     private int quantity;
 
-    @Column(name = "qr-code-id")
+    @Column(name = "qr_code_id")
     private UUID qrCodeId;
 
 }
