@@ -36,7 +36,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.springframework.security:spring-security-test")
     compileOnly("io.netty:netty-resolver-dns-native-macos:4.1.72.Final:osx-aarch_64")
-
 }
 
 dependencyManagement {
