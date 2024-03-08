@@ -27,11 +27,48 @@ public class RegistrationController {
         return users;
     }
 
+//    @PostMapping
+//    public User createUser(@RequestBody User user) {
+//        // encode the password before saving user
+//        user.setPassword(passwordEncoder.encode(user.getPassword()));
+//        return userRepository.save(user);
+//
+//    }
+
+
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        // encode the password before saving user
+    public ResponseEntity<?> createUser(@RequestBody User user) {
+        // Check if username is taken
+        boolean usernameExists = userRepository.findByUsername(user.getUsername()).isPresent();
+        if (usernameExists) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Account with this username already exists."));
+        }
+
+        // Check if email is taken
+        boolean emailExists = userRepository.findByEmail(user.getEmail()).isPresent();
+        if (emailExists) {
+            return ResponseEntity.badRequest().body(new ErrorResponse("Account with this email already exists."));
+        }
+
+        // If both username and email are unique, proceed with creating the user
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        User savedUser = userRepository.save(user);
+        return ResponseEntity.ok(savedUser); // Customize this response based on your requirements
+    }
+
+
+    // Inner class for error response
+    private static class ErrorResponse {
+        private final String message;
+
+        public ErrorResponse(String message) {
+            this.message = message;
+        }
+
+        // Getter
+        public String getMessage() {
+            return message;
+        }
     }
 
 
