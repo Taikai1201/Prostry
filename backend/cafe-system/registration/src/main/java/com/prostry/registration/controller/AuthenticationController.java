@@ -18,20 +18,21 @@ import com.prostry.registration.repository.UserRepository;
 
 @RestController
 public class AuthenticationController {
+
+    // TODO: add RequiredConstructor annotation to remove Field injections
     @Autowired
     private AuthenticationManager authenticationManager;
 
     @Autowired
     private JwtUtil jwtUtil;
 
-
     @PostMapping("/login")
-
     public ResponseEntity<?> createAuthenticationToken(@RequestBody LoginRequest authenticationRequest) throws Exception {
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
         );
 
+        // TODO: create context with holder, don't reuse (https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html#servlet-authentication-securitycontextholder)
         SecurityContextHolder.getContext().setAuthentication(authenticate);
 
         final String jwt = jwtUtil.generateToken(authenticationRequest.getUsername());
@@ -40,6 +41,7 @@ public class AuthenticationController {
 
     }
 
+    // TODO: move to separate file in dto package
     private static class AuthenticationResponse {
         private final String jwt;
 
@@ -54,7 +56,6 @@ public class AuthenticationController {
     }
 
 
-
     // handle error
 
     @ExceptionHandler(UsernameNotFoundException.class)
@@ -64,6 +65,7 @@ public class AuthenticationController {
                 .body(new ErrorResponse(e.getMessage()));
     }
 
+    // TODO: move to separate file in dto package
     // Inner class for error response
     private static class ErrorResponse {
         private final String error;
@@ -79,7 +81,7 @@ public class AuthenticationController {
     }
 
 
-
+    // TODO: remove this unnecessary declaration (you have the same class in separate file)
     static class LoginRequest {
         private String username;
         private String password;

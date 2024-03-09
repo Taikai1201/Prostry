@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import javax.persistence.*;
 
+// TODO: use proper annotation for fields access
 @Entity
 @Table(name = "prostry")
 public class User {
@@ -15,7 +16,6 @@ public class User {
     @JsonIgnore
     @JsonManagedReference
     @JsonBackReference
-
     private Long id;
 
     private String username;

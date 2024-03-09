@@ -11,8 +11,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/registration")
-
 public class RegistrationController {
+
+    // TODO: remove field injections
     @Autowired
     private UserRepository userRepository;
 
@@ -21,7 +22,6 @@ public class RegistrationController {
 
     @GetMapping
     public List<User> getAllUsers() {
-//        return userRepository.findAll();
         List<User> users = userRepository.findAll();
         System.out.println("Users: " + users); // Simple logging for debugging
         return users;
@@ -57,6 +57,8 @@ public class RegistrationController {
     }
 
 
+    // TODO: replace to separate file in dto package
+    // TODO: use records
     // Inner class for error response
     private static class ErrorResponse {
         private final String message;
