@@ -14,15 +14,12 @@ import java.util.Map;
 import java.util.function.Function;
 
 import io.jsonwebtoken.security.Keys;
+
 import javax.crypto.SecretKey;
 
 
-// TODO: used deprecated functions in jjwt-api lib, rewrite token generation with new API - FINISHED
-//  See github docs for more info
 @Component
 public class JwtUtil {
-
-    // TODO: move secret to properties file, inject with @Value() - FINISHED
 
     @Value("${jwt.secret}")
     private String secret;
@@ -33,7 +30,6 @@ public class JwtUtil {
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
-
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
@@ -60,7 +56,6 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    // TODO: DEPRECATED - FINISHED
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())

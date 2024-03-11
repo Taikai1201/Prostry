@@ -4,7 +4,6 @@ import com.prostry.registration.dto.ErrorResponse;
 import com.prostry.registration.model.User;
 import com.prostry.registration.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,6 @@ import java.util.List;
 
 public class RegistrationController {
 
-    // TODO: remove field injections - FINISHED
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -48,11 +46,4 @@ public class RegistrationController {
         User savedUser = userRepository.save(user);
         return ResponseEntity.ok(savedUser); // Customize this response based on your requirements
     }
-
-
-    // TODO: replace to separate file in dto - FINISHED
-    // TODO: use records - FINISHED
-
-
-
 }
