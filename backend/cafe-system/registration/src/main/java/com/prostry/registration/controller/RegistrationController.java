@@ -1,7 +1,9 @@
 package com.prostry.registration.controller;
 
+import com.prostry.registration.dto.ErrorResponse;
 import com.prostry.registration.model.User;
 import com.prostry.registration.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,14 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/registration")
+@RequiredArgsConstructor
+
 public class RegistrationController {
 
-    // TODO: remove field injections
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    // TODO: remove field injections - FINISHED
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @GetMapping
     public List<User> getAllUsers() {
@@ -26,14 +27,6 @@ public class RegistrationController {
         System.out.println("Users: " + users); // Simple logging for debugging
         return users;
     }
-
-//    @PostMapping
-//    public User createUser(@RequestBody User user) {
-//        // encode the password before saving user
-//        user.setPassword(passwordEncoder.encode(user.getPassword()));
-//        return userRepository.save(user);
-//
-//    }
 
 
     @PostMapping
@@ -57,21 +50,9 @@ public class RegistrationController {
     }
 
 
-    // TODO: replace to separate file in dto package
-    // TODO: use records
-    // Inner class for error response
-    private static class ErrorResponse {
-        private final String message;
+    // TODO: replace to separate file in dto - FINISHED
+    // TODO: use records - FINISHED
 
-        public ErrorResponse(String message) {
-            this.message = message;
-        }
-
-        // Getter
-        public String getMessage() {
-            return message;
-        }
-    }
 
 
 }

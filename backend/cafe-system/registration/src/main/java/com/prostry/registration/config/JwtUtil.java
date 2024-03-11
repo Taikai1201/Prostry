@@ -3,21 +3,37 @@ package com.prostry.registration.config;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-// TODO: used deprecated functions in jjwt-api lib, rewrite token generation with new API.
+import io.jsonwebtoken.security.Keys;
+import javax.crypto.SecretKey;
+
+
+// TODO: used deprecated functions in jjwt-api lib, rewrite token generation with new API - FINISHED
 //  See github docs for more info
 @Component
 public class JwtUtil {
 
-    // TODO: move secret to properties file, inject with @Value()
-    private String secret = "qbI8yToeqQHD+ywCvFRxNlfSSwqFI+HN0uWRGOZLgt8=";
+    // TODO: move secret to properties file, inject with @Value() - FINISHED
+
+    @Value("${jwt.secret}")
+    private String secret;
+
+    @Value("${jwt.expiration}")
+    private long expiration;
+
+    private SecretKey getSigningKey() {
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
 
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
@@ -25,12 +41,14 @@ public class JwtUtil {
     }
 
     private String createToken(Map<String, Object> claims, String subject) {
-        // TODO: DEPRECATED
-        return Jwts.builder().setClaims(claims).setSubject(subject)
+        return Jwts.builder()
+                .setClaims(claims)
+                .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                // TODO: move token lifetime to properties
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours expiration
-                .signWith(SignatureAlgorithm.HS256, secret).compact();
+                // Use expiration from properties
+                .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000)) // Convert to milliseconds
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
     }
 
     public String extractUsername(String token) {
@@ -42,9 +60,13 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    // TODO: DEPRECATED
+    // TODO: DEPRECATED - FINISHED
     private Claims extractAllClaims(String token) {
-        return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 
     // TODO: unused? do we validate token?

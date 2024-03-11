@@ -12,16 +12,20 @@ import java.util.Collections;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+    private final UserRepository userRepository;
+
     @Autowired
-    private UserRepository userRepository;
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
+
+        // TODO: wrong class return type. We should return User class defined by us, not the spring default. - FINISHED
+        //  In User class implement UserDetails interface for compatibility - FINISHED
+        return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-        // TODO: wrong class return type. We should return User class defined by us, not the spring default.
-        //  In User class implement UserDetails interface for compatibility
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), Collections.emptyList());
     }
 
 }
