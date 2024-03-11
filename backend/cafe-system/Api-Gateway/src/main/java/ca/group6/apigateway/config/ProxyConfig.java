@@ -12,8 +12,21 @@ public class ProxyConfig {
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("batch-service", route -> route
-                        .path("/api/v1/batches")
+                        .path("/api/v1/batches", "/api/v1/types")
                         .uri("lb://batch-service")
+                )
+                .route("sell-service", route -> route
+                        .path("/api/v1/sells")
+                        .uri("lb://sell-service")
+                )
+                .route("discovery-service", route -> route
+                        .path("/eureka/web")
+                        .filters(gatewayFilterSpec -> gatewayFilterSpec.setPath("/"))
+                        .uri("lb://discovery-service")
+                )
+                .route("discovery-service-static", route -> route
+                        .path("/eureka/**")
+                        .uri("lb://discovery-service")
                 )
                 .build();
     }
