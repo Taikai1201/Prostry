@@ -21,7 +21,7 @@ public class ProxyConfig {
                 )
                 .route("discovery-service", route -> route
                         .path("/eureka/web")
-                        .filters(gatewayFilterSpec -> gatewayFilterSpec.setPath("/"))
+                        .filters(f -> f.setPath("/"))
                         .uri("lb://discovery-service")
                 )
                 .route("discovery-service-static", route -> route

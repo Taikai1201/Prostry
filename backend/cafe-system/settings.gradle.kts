@@ -1,3 +1,3 @@
 rootProject.name = "cafe-system"
 include("Batch-Service", "Sell-Service",
-        "Discovery-Service", "Api-Gateway")
+        "Discovery-Service", "Api-Gateway", "Security-Service")
