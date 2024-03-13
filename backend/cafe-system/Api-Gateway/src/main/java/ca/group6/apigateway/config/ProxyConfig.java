@@ -17,12 +17,12 @@ public class ProxyConfig {
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 .route("batch-service", route -> route
-                        .path("/api/v1/batches", "/api/v1/types")
+                        .path("/api/v1/batches", "/api/v1/types", "/api/v1/batches/**")
                         .filters(f -> f.filter(jwtFilter))
                         .uri("lb://batch-service")
                 )
                 .route("sell-service", route -> route
-                        .path("/api/v1/sells")
+                        .path("/api/v1/sells", "/api/v1/sells/**")
                         .filters(f -> f.filter(jwtFilter))
                         .uri("lb://sell-service")
                 )

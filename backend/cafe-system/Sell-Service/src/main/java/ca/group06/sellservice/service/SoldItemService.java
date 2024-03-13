@@ -24,7 +24,7 @@ public class SoldItemService {
 
     private final SoldItemRepository soldItemRepository;
 
-    private final RestClient restClient;
+    private final KafkaMessagingService messagingService;
 
     private final String batchServiceUrl = "http://localhost:8180/api/batch-service";
 
@@ -85,12 +85,7 @@ public class SoldItemService {
         BatchServiceSellsUpdateRequest request = mapToSellUpdateRequest(soldItems);
 
         // Sending request to Batch Service
-        restClient.put()
-                .uri(batchServiceUrl + "/batches/sell-update")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(request)
-                .retrieve()
-                .toBodilessEntity();
+        messagingService.sendUpdateMessageToBatchService(request);
     }
 
     private BatchServiceSellsUpdateRequest mapToSellUpdateRequest(List<SoldItem> soldItems) {

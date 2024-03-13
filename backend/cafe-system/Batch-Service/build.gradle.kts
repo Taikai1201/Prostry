@@ -31,6 +31,7 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client:4.1.0")
+    implementation("org.springframework.kafka:spring-kafka")
 }
 
 tasks.withType<Test> {
