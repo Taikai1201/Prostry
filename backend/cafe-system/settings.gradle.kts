@@ -1,3 +1,4 @@
 rootProject.name = "cafe-system"
-include("Batch-Service", "Sell-Service",
-        "Discovery-Service", "Api-Gateway", "Security-Service")
+include("Inventory-Service", "Sell-Service",
+        "Discovery-Service", "Api-Gateway", "Security-Service",
+        "Notification-Service")

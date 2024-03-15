@@ -19,7 +19,7 @@ public class ProxyConfig {
                 .route("batch-service", route -> route
                         .path("/api/v1/batches", "/api/v1/types", "/api/v1/batches/**")
                         .filters(f -> f.filter(jwtFilter))
-                        .uri("lb://batch-service")
+                        .uri("lb://inventory-service")
                 )
                 .route("sell-service", route -> route
                         .path("/api/v1/sells", "/api/v1/sells/**")
