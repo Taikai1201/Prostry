@@ -8,13 +8,13 @@ import ca.group06.inventoryservice.model.Batch;
 import ca.group06.inventoryservice.repository.BatchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.security.InvalidParameterException;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.groupingBy;
 
@@ -26,6 +26,11 @@ public class BatchService {
     private final BatchRepository batchRepository;
 
     private final TypeService typeService;
+
+    private final KafkaProducerService kafkaProducerService;
+
+    // Every 60 mins
+    private final static Long checkRate = 3600000L;
 
     public void createBatchRecord(CreateBatchRequest request) {
 
@@ -143,6 +148,60 @@ public class BatchService {
             }
         }
 
+    }
+
+    @Scheduled(fixedRate = checkRate)
+    public void checkInventory() {
+
+        log.info("Checking inventory");
+        List<Batch> batches = batchRepository.findAll();
+
+        // Threshold check
+        // If some items overall is lower than 5 then triggering
+        final int threshold = 5;
+
+        // Mapping
+        Map<String, Integer> itemQuantity = batches.stream()
+                .collect(groupingBy(Batch::getName))
+                .entrySet()
+                .stream()
+                .collect(
+                        Collectors.toMap(Map.Entry::getKey,
+                                entry -> entry.getValue().stream().mapToInt(Batch::getQuantity).sum())
+                );
+
+        List<String> thresholdWarningMessages = itemQuantity.entrySet()
+                .stream()
+                .map(entry -> {
+                    if (entry.getValue() > 0 && entry.getValue() <= threshold) {
+                        return String.format("%s is getting low. Now is %d", entry.getKey(), entry.getValue());
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        // Out of stock check
+        List<String> outOfStockWarningMessages = itemQuantity.entrySet()
+                .stream()
+                .map(entry -> {
+                    if (entry.getValue() <= 0) {
+                        return String.format("%s - out of stock!", entry.getKey());
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        // Sending message to notification-service
+        List<String> warningMessages = Stream
+                .concat(thresholdWarningMessages.stream(), outOfStockWarningMessages.stream())
+                .toList();
+
+        if (!warningMessages.isEmpty()) {
+            kafkaProducerService.sendDataToNotificationService(warningMessages);
+            return;
+        }
     }
 
     BatchDto mapToBatchDto(Batch batch) {

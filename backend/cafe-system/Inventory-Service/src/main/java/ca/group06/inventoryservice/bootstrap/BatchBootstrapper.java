@@ -34,7 +34,7 @@ public class BatchBootstrapper implements DevDataBootstrapper {
         Batch b1 = Batch.builder()
                 .name("Chocolate cookie")
                 .type(cookiesType)
-                .quantity(20)
+                .quantity(5)
                 .qrCodeId(UUID.randomUUID())
                 .build();
         b1.setBestBefore(b1.getCreatedAt().plusDays(cookiesType.getStoreDays()));
@@ -42,7 +42,7 @@ public class BatchBootstrapper implements DevDataBootstrapper {
         Batch b2 = Batch.builder()
                 .name("White bread")
                 .type(breadType)
-                .quantity(4)
+                .quantity(1)
                 .createdAt(LocalDate.of(2024,2,1))
                 .qrCodeId(UUID.randomUUID())
                 .build();
@@ -51,7 +51,7 @@ public class BatchBootstrapper implements DevDataBootstrapper {
         Batch b21 = Batch.builder()
                 .name("White bread")
                 .type(breadType)
-                .quantity(10)
+                .quantity(1)
                 .createdAt(LocalDate.of(2024,2,2))
                 .qrCodeId(UUID.randomUUID())
                 .build();
@@ -60,7 +60,7 @@ public class BatchBootstrapper implements DevDataBootstrapper {
         Batch b22 = Batch.builder()
                 .name("White bread")
                 .type(breadType)
-                .quantity(10)
+                .quantity(1)
                 .createdAt(LocalDate.of(2024,2,3))
                 .qrCodeId(UUID.randomUUID())
                 .build();

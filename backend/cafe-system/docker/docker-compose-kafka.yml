@@ -55,6 +55,8 @@ services:
       echo -e 'Creating kafka topics'
       echo -e 'Creating update-inventory topic'
       kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic update-inventory-event --replication-factor 1 --partitions 2
+      echo -e 'Creating inventory-check topic'
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic inventory-check-event --replication-factor 1 --partitions 2
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server kafka:9092 --list
       "
